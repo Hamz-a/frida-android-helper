@@ -7,6 +7,7 @@ from adb.device import Device
 
 
 FRIDA_INSTALL_DIR = "/data/local/tmp/"
+FRIDA_BIN_NAME = "frida-server"
 FRIDA_LATEST_RELEASE_URL = "https://api.github.com/repos/frida/frida/releases/latest"
 
 
@@ -44,7 +45,7 @@ def download_latest_frida(device: Device):
 
 def launch_frida_server(device: Device):
     # hack: launch server, "forever sleep" and put in background. Short timeout to break off connection
-    perform_cmd(device, "/data/local/tmp/frida-server && sleep 2147483647 &", root=True, timeout=1)
+    perform_cmd(device, "{}{} && sleep 2147483647 &".format(FRIDA_INSTALL_DIR, FRIDA_BIN_NAME), root=True, timeout=1)
 
 
 def get_devices():
@@ -97,12 +98,12 @@ def update_server():
     devices = get_devices()
     for device in devices:
         server_binary = download_latest_frida(device)
-        device.push(server_binary, FRIDA_INSTALL_DIR, 755)
+        device.push(server_binary, "{}{}".format(FRIDA_INSTALL_DIR, FRIDA_BIN_NAME), 755)
         launch_frida_server(device)
 
 
 def main():
-    arg_parser = argparse.ArgumentParser(prog="frida_android_helper", description="Frida Android Helper")
+    arg_parser = argparse.ArgumentParser(prog="fah", description="Frida Android Helper")
     subparsers = arg_parser.add_subparsers(dest="func")
 
     server_group = subparsers.add_parser("server", help="Manage Frida server")
