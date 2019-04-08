@@ -16,7 +16,7 @@ setup(
     keywords="frida android helper",
     entry_points={
         'console_scripts': [
-            'frida_android_helper = frida_android_helper.fah:main'
+            'fah = frida_android_helper.fah:main'
         ]
     },
 )
