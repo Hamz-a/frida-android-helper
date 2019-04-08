@@ -102,7 +102,7 @@ def update_server():
 
 
 def main():
-    arg_parser = argparse.ArgumentParser(prog="fah", description="Frida Android Helper")
+    arg_parser = argparse.ArgumentParser(prog="frida_android_helper", description="Frida Android Helper")
     subparsers = arg_parser.add_subparsers(dest="func")
 
     server_group = subparsers.add_parser("server", help="Manage Frida server")
