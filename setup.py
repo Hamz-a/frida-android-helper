@@ -4,6 +4,7 @@ from distutils.core import setup
 with open("requirements.txt") as f:
     requirements = f.readlines()
 
+
 setup(
     name="fridaandroidhelper",
     description="Handy Android frida helping tools at the tip of your terminal",
