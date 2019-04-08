@@ -16,5 +16,7 @@
 Currently the project only includes commands to start, stop, restart and most importantly update
 the latest frida-server on your Android device.
 
+Commands are self explanatory. Ask for help `fah --help`.
+
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
