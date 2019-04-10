@@ -1,5 +1,11 @@
 # Frida Android Helper
 
+Currently the project only includes commands to start, stop, restart and most importantly update
+the latest frida-server on your Android device.
+
+It uses `pure-python-adb` to interface with the ADB server. The latest Android frida-server is fetched from GitHub
+release page using the GitHub API. This is then installed on the Android device using `fah server update` command.
+
 
 ## Prerequisites
 - Python 3
@@ -12,11 +18,18 @@
 
 2. Install `python3 setup.py install`
 
+
 ## Usage
-Currently the project only includes commands to start, stop, restart and most importantly update
-the latest frida-server on your Android device.
 
 Commands are self explanatory. Ask for help `fah --help`.
 
+### Frida-server management
+
+- Start the frida-server `fah server start`
+- Stop the frida-server `fah server stop`
+- Reboot the frida-server `fah server reboot`
+- Update the frida-server `fah server update`
+
+ 
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
