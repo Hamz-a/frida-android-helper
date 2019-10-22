@@ -30,6 +30,15 @@ Commands are self explanatory. Ask for help `fah --help`.
 - Reboot the frida-server `fah server reboot`
 - Update the frida-server `fah server update`
 
+### Android proxy configuration
+
+- Enable proxy:
+    - `fah proxy`: will automatically select an IP address from your PC, default port 8080
+    - `fah proxy enable`: same as above
+    - `fah proxy enable 192.168.137.137`: specify IP address, default port 8080
+    - `fah proxy enable 192.168.137.137 8888`: specify IP address and port
+- Disable proxy `fah proxy disable`
+
  
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
