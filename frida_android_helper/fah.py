@@ -150,6 +150,14 @@ def disable_proxy():
         print("🔥 Sent PROXY_CHANGE broadcast...")
 
 
+def get_proxy():
+    print("⚡ Retrieving the Android proxy...")
+    for device in get_devices():
+        print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
+        result = device.shell("settings get global http_proxy")
+        print("🔥 settings get global http_proxy => {}".format(result.strip()))
+
+
 def main():
     arg_parser = argparse.ArgumentParser(prog="fah", description="Frida Android Helper")
     subparsers = arg_parser.add_subparsers(dest="func")
@@ -161,6 +169,7 @@ def main():
     proxy_group = subparsers.add_parser("proxy", help="Configure Android proxy")
     proxy_group.add_argument("action", metavar="enable", type=str, help="Enable Android proxy", nargs="*", default=["set"])
     proxy_group.add_argument("disable", type=str, help="Delete Android proxy", nargs='?')
+    proxy_group.add_argument("get", type=str, help="Get Android proxy settings", nargs='?')
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -178,6 +187,7 @@ def main():
         proxy_route = {
             "enable": enable_proxy,
             "disable": disable_proxy,
+            "get": get_proxy
         }
         proxy_route.get(args.action[0], enable_proxy)(*args.action[1:2])
 
