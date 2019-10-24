@@ -3,6 +3,7 @@ import subprocess
 import requests
 import lzma
 import socket
+from datetime import datetime
 from adb.client import Client as AdbClient
 from adb.device import Device
 
@@ -158,6 +159,25 @@ def get_proxy():
         print("🔥 settings get global http_proxy => {}".format(result.strip()))
 
 
+def take_screenshot(filename=None):
+    print("⚡ Taking a screenshot...")
+    for device in get_devices():
+        signature = get_device_model(device).replace(" ", "")
+        if filename is None:
+            filename = "{}_{}.png".format(signature, datetime.now().strftime("%Y.%m.%d_%H.%M.%S"))
+        else:
+            filename = "{}_{}.png".format(signature, filename)
+
+        try:
+            result = device.screencap()
+            with open(filename, "wb") as f:
+                f.write(result)
+            print("🔥 Screeenshot saved {}".format(filename))
+        except IndexError:
+            print("⚠️ Activity probably protected by SECURE flag...")
+            # todo implement frida hook to disable SECURE flag
+
+
 def main():
     arg_parser = argparse.ArgumentParser(prog="fah", description="Frida Android Helper")
     subparsers = arg_parser.add_subparsers(dest="func")
@@ -170,6 +190,9 @@ def main():
     proxy_group.add_argument("action", metavar="enable", type=str, help="Enable Android proxy", nargs="*", default=["set"])
     proxy_group.add_argument("disable", type=str, help="Delete Android proxy", nargs='?')
     proxy_group.add_argument("get", type=str, help="Get Android proxy settings", nargs='?')
+
+    screen_group = subparsers.add_parser("screen", help="Take screenshot for evidence")
+    screen_group.add_argument("action", metavar="filename", type=str, help="Specify filename", nargs="?", default=None)
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -190,8 +213,10 @@ def main():
             "get": get_proxy
         }
         proxy_route.get(args.action[0], enable_proxy)(*args.action[1:2])
+    elif args.func == "screen":
+        take_screenshot(args.action)
 
-    # print(args) # debugging purposes
+    #print(args) # debugging purposes
 
 
 if __name__ == '__main__':
