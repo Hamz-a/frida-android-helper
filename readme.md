@@ -39,6 +39,12 @@ Commands are self explanatory. Ask for help `fah --help`.
     - `fah proxy enable 192.168.137.137 8888`: specify IP address and port
 - Disable proxy `fah proxy disable`
 - Get current proxy settings `fah proxy get`
- 
+
+
+### Android screenshot
+- `fah screen` take a screenshot with the following format `deviceID_%Y.%m.%d_%H.%M.%S.png`
+    - `fah screen filename` take a screenshot with the following format: `deviceID_filename.png`
+    
+
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
