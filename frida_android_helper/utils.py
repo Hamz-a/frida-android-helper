@@ -28,6 +28,7 @@ def perform_cmd(device: Device, command: str, root: bool = False, timeout: int =
         return device.shell(command, timeout=timeout)
     except:
         pass
+        return ""
 
 
 def get_ip_address():  # might need refactoring...
@@ -50,3 +51,16 @@ def get_architecture(device: Device):
     if "x86" in cpu:
         return "x86"
     return ""
+
+
+def get_current_app_focus(device: Device):
+    # Sample: mCurrentFocus=Window{127ced0 u0 com.android.launcher3/com.android.searchlauncher.SearchLauncher}
+    # When locked: mCurrentFocus=Window{8f41b66 u0 StatusBar}
+    result = perform_cmd(device, "dumpsys window windows | grep mCurrentFocus")
+
+    currentFocus = result.strip("\r\n{}").split(" ")[-1]
+    if "/" in currentFocus:
+        return currentFocus.split("/")
+    else:
+        print("⚠️  Device might be locked... (mCurrentFocus={})".format(currentFocus))
+        return [currentFocus, ""]

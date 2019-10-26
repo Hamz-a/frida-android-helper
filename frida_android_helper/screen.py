@@ -1,5 +1,6 @@
 from datetime import datetime
 from frida_android_helper.utils import *
+from frida_android_helper.frida_utils import *
 
 
 def take_screenshot(filename=None):
@@ -17,5 +18,15 @@ def take_screenshot(filename=None):
                 f.write(result)
             print("🔥 Screeenshot saved {}".format(filename))
         except IndexError:
-            print("⚠️ Activity probably protected by SECURE flag...")
-            # todo implement frida hook to disable SECURE flag
+            print("⚠️  Activity probably protected by SECURE flag...")
+            app, activity = get_current_app_focus(device)
+            if not activity: return
+            print("🔥 Trying to disable SECURE flag for {}.{}...".format(app, activity))
+            disable_secure_flag(device, app, activity)
+            try:
+                result = device.screencap()
+                with open(filename, "wb") as f:
+                    f.write(result)
+                print("🔥 Screeenshot saved {}".format(filename))
+            except IndexError:
+                print("❌️ SECURE flag bypass probably didn't work...")
