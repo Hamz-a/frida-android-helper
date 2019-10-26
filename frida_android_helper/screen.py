@@ -20,7 +20,7 @@ def take_screenshot(filename=None):
         except IndexError:
             print("⚠️  Activity probably protected by SECURE flag...")
             app, activity = get_current_app_focus(device)
-            if not activity: return
+            if not activity: continue
             print("🔥 Trying to disable SECURE flag for {}.{}...".format(app, activity))
             disable_secure_flag(device, app, activity)
             try:
