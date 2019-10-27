@@ -1,10 +1,8 @@
 # Frida Android Helper
 
-Currently the project only includes commands to start, stop, restart and most importantly update
-the latest frida-server on your Android device.
+Several handy commands to facilitate common Android pentesting tasks.
 
-It uses `pure-python-adb` to interface with the ADB server. The latest Android frida-server is fetched from GitHub
-release page using the GitHub API. This is then installed on the Android device using `fah server update` command.
+It uses `pure-python-adb` to interface with the ADB server.
 
 
 ## Prerequisites
@@ -23,12 +21,15 @@ release page using the GitHub API. This is then installed on the Android device 
 
 Commands are self explanatory. Ask for help `fah --help`.
 
+
 ### Frida-server management
 
 - Start the frida-server `fah server start`
 - Stop the frida-server `fah server stop`
 - Reboot the frida-server `fah server reboot`
-- Update the frida-server `fah server update`
+- Update the frida-server `fah server update`: The latest Android frida-server is fetched from GitHub
+release page using the GitHub API. This is then installed on the Android device using `fah server update` command.
+
 
 ### Android proxy configuration
 
@@ -42,9 +43,14 @@ Commands are self explanatory. Ask for help `fah --help`.
 
 
 ### Android screenshot
-- `fah screen` take a screenshot with the following format `deviceID_%Y.%m.%d_%H.%M.%S.png`
-    - `fah screen filename` take a screenshot with the following format: `deviceID_filename.png`
-    
+- `fah screen`: take a screenshot with the following format `deviceID_%Y.%m.%d_%H.%M.%S.png`
+    - `fah screen filename`: take a screenshot with the following format: `deviceID_filename.png`
+
+
+### Android disk snapshot
+- `fah snap`: take a disk snapshot of the current open app
+    - `fah snap com.example.app`: take a disk snapshot of `com.example.app` app
+
 
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
