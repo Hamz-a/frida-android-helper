@@ -1,6 +1,6 @@
 import frida
 import os
-from adb.device import Device
+from ppadb.device import Device
 
 
 def get_js_hook(js_filename):

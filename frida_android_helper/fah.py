@@ -2,6 +2,7 @@ import argparse
 from frida_android_helper.screen import *
 from frida_android_helper.server import *
 from frida_android_helper.proxy import *
+from frida_android_helper.snap import *
 
 
 def main():
@@ -19,6 +20,9 @@ def main():
 
     screen_group = subparsers.add_parser("screen", help="Take screenshot for evidence")
     screen_group.add_argument("action", metavar="filename", type=str, help="Specify filename", nargs="?", default=None)
+
+    snap_group = subparsers.add_parser("snap", help="Make snapshots of data on disk")
+    snap_group.add_argument("action", metavar="packagename", type=str, help="Specify packagename", nargs="?", default=None)
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -41,6 +45,8 @@ def main():
         proxy_route.get(args.action[0], enable_proxy)(*args.action[1:2])
     elif args.func == "screen":
         take_screenshot(args.action)
+    elif args.func == "snap":
+        take_snapshot(args.action)
 
     #print(args) # debugging purposes
 

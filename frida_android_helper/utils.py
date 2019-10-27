@@ -1,8 +1,8 @@
 import subprocess
 import socket
 
-from adb.client import Client as AdbClient
-from adb.device import Device
+from ppadb.client import Client as AdbClient
+from ppadb.device import Device
 
 
 def get_devices():
