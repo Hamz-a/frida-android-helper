@@ -16,7 +16,7 @@ def take_screenshot(filename=None):
             result = device.screencap()
             with open(filename, "wb") as f:
                 f.write(result)
-            print("🔥 Screeenshot saved {}".format(filename))
+            print("🔥 Screenshot saved {}".format(filename))
         except IndexError:
             print("⚠️  Activity probably protected by SECURE flag...")
             app, activity = get_current_app_focus(device)
@@ -27,6 +27,6 @@ def take_screenshot(filename=None):
                 result = device.screencap()
                 with open(filename, "wb") as f:
                     f.write(result)
-                print("🔥 Screeenshot saved {}".format(filename))
+                print("🔥 Screenshot saved {}".format(filename))
             except IndexError:
                 print("❌️ SECURE flag bypass probably didn't work...")
