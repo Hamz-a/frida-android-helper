@@ -1,10 +1,9 @@
+import pkg_resources
 import frida
-import os
 
 
 def get_js_hook(js_filename):
-    with open(os.path.join(os.path.dirname(__file__), "frida_hooks/{}".format(js_filename))) as f:
-        return f.read()
+    return pkg_resources.resource_string("frida_android_helper", "frida_hooks/{}".format(js_filename)).decode("utf-8")
 
 
 def destroyed_callback(reason):
