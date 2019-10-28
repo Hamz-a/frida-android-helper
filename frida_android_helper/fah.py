@@ -24,6 +24,7 @@ def main():
     snap_group = subparsers.add_parser("snap", help="Make snapshots of data on disk")
     snap_group.add_argument("action", metavar="packagename", type=str, help="Specify packagename", nargs="?", default=None)
 
+
     args = arg_parser.parse_args()
     if not args.func:
         arg_parser.print_help()
@@ -47,6 +48,7 @@ def main():
         take_screenshot(args.action)
     elif args.func == "snap":
         take_snapshot(args.action)
+
 
     #print(args) # debugging purposes
 

@@ -11,7 +11,7 @@ def enable_proxy(host=None, port="8080"):
     if not port.isdigit():  # Just in case...
         port = 8080
 
-    print("⚡ Enabling the Android proxy...")
+    print("⚡️ Enabling the Android proxy...")
     for device in get_devices():
         print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         device.shell("settings put global http_proxy {}:{}".format(host, port))
@@ -20,7 +20,7 @@ def enable_proxy(host=None, port="8080"):
 
 
 def disable_proxy():
-    print("⚡ Disabling the Android proxy...")
+    print("⚡️ Disabling the Android proxy...")
     for device in get_devices():
         print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         result = device.shell("settings delete global http_proxy")
@@ -37,7 +37,7 @@ def disable_proxy():
 
 
 def get_proxy():
-    print("⚡ Retrieving the Android proxy...")
+    print("⚡️ Retrieving the Android proxy...")
     for device in get_devices():
         print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         result = device.shell("settings get global http_proxy")

@@ -33,7 +33,7 @@ def launch_frida_server(device: Device):
 
 
 def start_server():
-    print("⚡ Starting frida-server")
+    print("⚡️ Starting frida-server")
     devices = get_devices()
     for device in devices:
         print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
@@ -41,7 +41,7 @@ def start_server():
 
 
 def stop_server():
-    print("⚡ Stopping frida-server")
+    print("⚡️ Stopping frida-server")
     devices = get_devices()
     for device in devices:
         print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
@@ -49,13 +49,13 @@ def stop_server():
 
 
 def reboot_server():
-    print("⚡ Rebooting frida-server")
+    print("⚡️ Rebooting frida-server")
     stop_server()
     start_server()
 
 
 def update_server():
-    print("⚡ Updating frida-server")
+    print("⚡️ Updating frida-server")
     devices = get_devices()
     for device in devices:
         print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))

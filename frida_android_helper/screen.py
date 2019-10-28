@@ -4,7 +4,7 @@ from frida_android_helper.frida_utils import *
 
 
 def take_screenshot(filename=None):
-    print("⚡ Taking a screenshot...")
+    print("⚡️ Taking a screenshot...")
     for device in get_devices():
         signature = get_device_model(device).replace(" ", "")
         if filename is None:

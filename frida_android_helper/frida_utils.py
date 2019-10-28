@@ -1,6 +1,5 @@
 import frida
 import os
-from ppadb.device import Device
 
 
 def get_js_hook(js_filename):
@@ -8,8 +7,8 @@ def get_js_hook(js_filename):
         return f.read()
 
 
-def detached_callback(reason):
-    print("🔰 Detached! Reason: {}".format(reason))
+def destroyed_callback(reason):
+    print("🔰 Destroyed! Reason: {}".format(reason))
 
 
 def message_callback(message, data):
@@ -19,13 +18,13 @@ def message_callback(message, data):
         print("🐛 ".format(message))
 
 
-# todo fix hook
-# Error: android.view.ViewRootImpl$CalledFromWrongThreadException:
-# Only the original thread that created a view hierarchy can touch its views.
-def disable_secure_flag(device: Device, pkg_name, activity_name):
-    js_code = "disable_secure_flag.js"
+def disable_secure_flag(device, pkg_name, activity_name):
+    js_code = get_js_hook("disable_secure_flag.js")
     device = frida.get_device(device.get_serial_no())
     session = device.attach(pkg_name)
     script = session.create_script(js_code)
+    script.on("message", message_callback)
     script.load()
-    script.post({"activity": activity_name})  # Send data to JS agent
+    script.exports.disablesecureflag(activity_name)
+
+

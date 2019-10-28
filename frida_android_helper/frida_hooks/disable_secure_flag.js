@@ -1,19 +1,38 @@
-Java.perform(function() {
-    // https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_SECURE
-    var FLAG_SECURE = 0x2000;
+rpc.exports = {
+    disablesecureflag: function(activity_name) {
+        Java.perform(function() {
+            // https://developer.android.com/reference/android/view/WindowManager.LayoutParams.html#FLAG_SECURE
+            var FLAG_SECURE = 0x2000;
 
-    var activity_name;
+            var Runnable = Java.use("java.lang.Runnable");
+            var DisableSecureRunnable = Java.registerClass({
+                name: "me.bhamza.DisableSecureRunnable",
+                implements: [Runnable],
+                fields: {
+                    activity: "android.app.Activity",
+                },
+                methods: {
+                    $init: [{
+                        returnType: "void",
+                        argumentTypes: ["android.app.Activity"],
+                        implementation: function (activity) {
+                            this.activity.value = activity;
+                        }
+                    }],
+                    run: function() {
+                        this.activity.value.getWindow().setFlags(0, FLAG_SECURE); // disable it!
+                        send("Done disabling SECURE flag...")
+                    }
+                }
+            });
 
-    // recv(function (data) { // Wait and receive values from Python agent
-    //     pkg_name = data.pkg_name;
-    //     activity_name = data.activity_name;
-    // }).wait();
-    activity_name = "se.tink.android.MainActivity";
-    Java.choose(activity_name, {
-       "onMatch": function (instance) {
-            instance.getWindow().setFlags(0, FLAG_SECURE); // disable it!
-            send("Done disabling SECURE flag...")
-       },
-        "onComplete": function () {}
-    });
-});
+            Java.choose(activity_name, {
+                "onMatch": function (instance) {
+                    var runnable = DisableSecureRunnable.$new(instance);
+                    instance.runOnUiThread(runnable);
+                },
+                "onComplete": function () {}
+            });
+        });
+    }
+};
