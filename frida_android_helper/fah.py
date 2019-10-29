@@ -3,6 +3,7 @@ from frida_android_helper.screen import *
 from frida_android_helper.server import *
 from frida_android_helper.proxy import *
 from frida_android_helper.snap import *
+from frida_android_helper.cert import *
 
 
 def main():
@@ -23,6 +24,9 @@ def main():
 
     snap_group = subparsers.add_parser("snap", help="Make snapshots of data on disk")
     snap_group.add_argument("action", metavar="packagename", type=str, help="Specify packagename", nargs="?", default=None)
+
+    cert_group = subparsers.add_parser("cert", help="Install CA for mitm purposes")
+    cert_group.add_argument("action", metavar="cert", type=str, help="Specify certificate to install", nargs="?", default=None)
 
 
     args = arg_parser.parse_args()
@@ -48,7 +52,8 @@ def main():
         take_screenshot(args.action)
     elif args.func == "snap":
         take_snapshot(args.action)
-
+    elif args.func == "cert":
+        install_cert(args.action)
 
     #print(args) # debugging purposes
 
