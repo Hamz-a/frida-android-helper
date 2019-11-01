@@ -20,8 +20,10 @@ rpc.exports = {
                         }
                     }],
                     run: function() {
-                        this.activity.value.getWindow().setFlags(0, FLAG_SECURE); // disable it!
-                        send("Done disabling SECURE flag...")
+                        var flags = this.activity.value.getWindow().getAttributes().flags.value; // get current value
+                        flags &= ~FLAG_SECURE; // toggle it
+                        this.activity.value.getWindow().setFlags(flags, FLAG_SECURE); // disable it!
+                        send("Done disabling SECURE flag...");
                     }
                 }
             });
