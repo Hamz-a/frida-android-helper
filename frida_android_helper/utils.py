@@ -36,8 +36,8 @@ def get_ip_address():  # might need refactoring...
 
 
 def get_device_model(device: Device):
-    return "{} {}".format(device.get_properties()["ro.vendor.product.manufacturer"],
-                          device.get_properties()["ro.vendor.product.model"])
+    return "{} {}".format(device.get_properties().get("ro.vendor.product.manufacturer", "Unknown"),
+                          device.get_properties().get("ro.vendor.product.model", "Unkown"))
 
 
 def get_architecture(device: Device):
