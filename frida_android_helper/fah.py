@@ -4,6 +4,7 @@ from frida_android_helper.server import *
 from frida_android_helper.proxy import *
 from frida_android_helper.snap import *
 from frida_android_helper.cert import *
+from frida_android_helper.app import *
 
 
 def main():
@@ -16,8 +17,8 @@ def main():
 
     proxy_group = subparsers.add_parser("proxy", help="Configure Android proxy")
     proxy_group.add_argument("action", metavar="enable", type=str, help="Enable Android proxy", nargs="*", default=["set"])
-    proxy_group.add_argument("disable", type=str, help="Delete Android proxy", nargs='?')
-    proxy_group.add_argument("get", type=str, help="Get Android proxy settings", nargs='?')
+    proxy_group.add_argument("disable", type=str, help="Delete Android proxy", nargs="?")
+    proxy_group.add_argument("get", type=str, help="Get Android proxy settings", nargs="?")
 
     screen_group = subparsers.add_parser("screen", help="Take screenshot for evidence")
     screen_group.add_argument("action", metavar="filename", type=str, help="Specify filename", nargs="?", default=None)
@@ -27,6 +28,10 @@ def main():
 
     cert_group = subparsers.add_parser("cert", help="Install CA for mitm purposes")
     cert_group.add_argument("action", metavar="cert", type=str, help="Specify certificate to install", nargs="?", default=None)
+
+    app_group = subparsers.add_parser("app", help="List and download apps from device")
+    app_group.add_argument("action", metavar="dl", type=str, help="Download Android app", nargs="*", default=["set"])
+    app_group.add_argument("list", type=str, help="List installed Android apps", nargs="?")
 
 
     args = arg_parser.parse_args()
@@ -54,9 +59,16 @@ def main():
         take_snapshot(args.action)
     elif args.func == "cert":
         install_cert(args.action)
+    elif args.func == "app":
+        app_route = {
+            "dl": download_app,
+            "list": list_apps,
+        }
+        app_route.get(args.action[0], download_app)(*args.action[1])    # todo does idx=1 exist?
+
 
     #print(args) # debugging purposes
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

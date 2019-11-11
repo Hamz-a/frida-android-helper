@@ -52,5 +52,12 @@ release page using the GitHub API. This is then installed on the Android device 
     - `fah snap com.example.app`: take a disk snapshot of `com.example.app` app
 
 
+### Android app
+- `fah app`: try to download the currently opened app
+    - `fah app dl`: same as above
+    - `fah app dl com.example.app`: download com.example.app
+- `fah app list`: list installed app on Android device.
+ 
+
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
