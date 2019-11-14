@@ -30,9 +30,8 @@ def main():
     cert_group.add_argument("action", metavar="cert", type=str, help="Specify certificate to install", nargs="?", default=None)
 
     app_group = subparsers.add_parser("app", help="List and download apps from device")
-    app_group.add_argument("action", metavar="dl", type=str, help="Download Android app", nargs="*", default=["set"])
+    app_group.add_argument("action", metavar="dl", type=str, help="Download Android app", nargs="*", default=["dl"])
     app_group.add_argument("list", type=str, help="List installed Android apps", nargs="?")
-
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -64,7 +63,7 @@ def main():
             "dl": download_app,
             "list": list_apps,
         }
-        app_route.get(args.action[0], download_app)(*args.action[1])    # todo does idx=1 exist?
+        app_route.get(args.action[0], download_app)(*args.action[1:2])
 
 
     #print(args) # debugging purposes
@@ -72,3 +71,9 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# /usr/local/bin/python3.7 /Users/hb/PycharmProjects/frida-android-helper/frida_android_helper/fah.py app foo
+# Namespace(action=['foo'], func='app', list=None)
+
+# /usr/local/bin/python3.7 /Users/hb/PycharmProjects/frida-android-helper/frida_android_helper/fah.py app
+# Namespace(action=['set'], func='app', list=None)
