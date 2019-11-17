@@ -1,2 +1,7 @@
 .idea
 venv
+.DS_Store
+build/
+dist/
+frida_android_helper.egg-info/
+frida_android_helper/__pycache__/
