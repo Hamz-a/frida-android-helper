@@ -5,6 +5,7 @@ from frida_android_helper.utils import *
 def take_snapshot(packagename=None):
     print("⚡️ Taking a snapshot...")
     for device in get_devices():
+        print("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         if packagename is None:  # get
             packagename, _ = get_current_app_focus(device)
             if packagename == "StatusBar":
