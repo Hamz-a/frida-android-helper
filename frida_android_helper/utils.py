@@ -1,8 +1,13 @@
 import subprocess
 import socket
+import sys
 
 from ppadb.client import Client as AdbClient
 from ppadb.device import Device
+
+
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 
 def get_devices():
