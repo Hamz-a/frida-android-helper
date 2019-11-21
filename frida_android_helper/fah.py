@@ -1,4 +1,5 @@
 import argparse
+
 from frida_android_helper.screen import *
 from frida_android_helper.server import *
 from frida_android_helper.proxy import *
