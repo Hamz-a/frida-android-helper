@@ -16,13 +16,13 @@ def get_devices():
             client = AdbClient(host="127.0.0.1", port=5037)
             client.version()  # a random call to check if adb server is up
         except Exception as err:
-            print(str(err))
-            print("⚡ Starting ADB server...")
+            eprint(str(err))
+            eprint("⚡ Starting ADB server...")
             subprocess.run(["adb", "start-server"])
 
     devices = client.devices()
     if len(devices) == 0:
-        print("⚠️  no devices connected!")
+        eprint("⚠️  no devices connected!")
     return devices
 
 
@@ -67,5 +67,5 @@ def get_current_app_focus(device: Device):
     if "/" in currentFocus:
         return currentFocus.split("/")
     else:
-        print("⚠️  Device might be locked... (mCurrentFocus={})".format(currentFocus))
+        eprint("⚠️  Device might be locked... (mCurrentFocus={})".format(currentFocus))
         return [currentFocus, ""]
