@@ -27,8 +27,10 @@ def main():
     snap_group = subparsers.add_parser("snap", help="Make snapshots of data on disk")
     snap_group.add_argument("action", metavar="packagename", type=str, help="Specify packagename", nargs="?", default=None)
 
-    cert_group = subparsers.add_parser("cert", help="Install CA for mitm purposes")
-    cert_group.add_argument("action", metavar="cert", type=str, help="Specify certificate to install", nargs="?", default=None)
+    cert_group = subparsers.add_parser("cert", help="Certificate creation & installation for mitm purposes")
+    cert_group.add_argument("action", metavar="generate", type=str, help="Generate certificate", nargs="*", default=["generate"])
+    cert_group.add_argument("install", type=str, help="Install a certificate", nargs="?")
+    cert_group.add_argument("setup", type=str, help="Generate & install certificate", nargs="?")
 
     app_group = subparsers.add_parser("app", help="List and download apps from device")
     app_group.add_argument("action", metavar="dl", type=str, help="Download Android app", nargs="*", default=["dl"])
@@ -58,23 +60,20 @@ def main():
     elif args.func == "snap":
         take_snapshot(args.action)
     elif args.func == "cert":
-        install_cert(args.action)
+        cert_route = {
+            "generate": generate_certificate,
+            "install": install_certificate,
+            "setup": setup_certificate,
+        }
+        cert_route.get(args.action[0], generate_certificate)(*args.action[1:2])
     elif args.func == "app":
         app_route = {
             "dl": download_app,
             "list": list_apps,
         }
         app_route.get(args.action[0], download_app)(*args.action[1:2])
-
-
     #print(args) # debugging purposes
 
 
 if __name__ == "__main__":
     main()
-
-# /usr/local/bin/python3.7 /Users/hb/PycharmProjects/frida-android-helper/frida_android_helper/fah.py app foo
-# Namespace(action=['foo'], func='app', list=None)
-
-# /usr/local/bin/python3.7 /Users/hb/PycharmProjects/frida-android-helper/frida_android_helper/fah.py app
-# Namespace(action=['set'], func='app', list=None)
