@@ -52,6 +52,12 @@ release page using the GitHub API. This is then installed on the Android device 
     - `fah snap com.example.app`: take a disk snapshot of `com.example.app` app
 
 
+### Android certificate creation & installation for mitm purposes
+- `fah cert`: generate a custom CA certificate to be imported in burp & device
+    - `fah cert generate`: same as above
+    - `fah cert install`: install specified certificate on device
+    - `fah cert setup`: generate and install certificate (above commands combined)
+
 ### Android app
 - `fah app`: try to download the currently opened app
     - `fah app dl`: same as above
