@@ -8,13 +8,13 @@ from frida_android_helper.utils import *
 from os.path import isfile
 
 
-def setup_certificate():
+def setup_certificate(_=None):
     eprint("⚡️ Setting up your device certificate...")
     generate_certificate()
     install_certificate()
 
 
-def generate_certificate():
+def generate_certificate(_=None):
     eprint("⚡️ Generating certificate...")
 
     # Generate a private key
@@ -77,6 +77,7 @@ def install_certificate(certificate=None):
         eprint("🔥 Certificate not specified, checking the existence of a default fah_ca.der...")
         if isfile("fah_ca.der"):
             eprint("🔥 Found fah_ca.der...")
+            certificate = "fah_ca.der"
         else:
             eprint("❌ fah_ca.der not found...")
             return
@@ -85,10 +86,34 @@ def install_certificate(certificate=None):
             eprint("🔥 Found {}...".format(certificate))
             # https://github.com/openssl/openssl/blob/47b4ccea9cb9b924d058fd5a8583f073b7a41656/crypto/x509/x509_cmp.c#L207
             eprint("🔥 to be implemented")
+            x509_old_hash = "<update this>"
+            return
         else:
             eprint("❌ {} not found...".format(certificate))
             return
 
+    # install them certificates on devices
+    for device in get_devices():
+        eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
+        eprint("🔥 Pushing {} to {}/{}...".format(certificate, "/data/local/tmp", x509_old_hash))
+        device.push(certificate, "/data/local/tmp/{}".format(x509_old_hash))
+
+        offset = 0
+        while "No such file or directory" not in \
+            perform_cmd(device, "ls /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset)):
+            eprint("❌ Found /system/etc/security/cacerts/{}.{}, incrementing by 1...".format(x509_old_hash, offset))
+            offset += 1
+
+        eprint("🔥 Remounting the system rw: mount -o rw,remount /system...")
+        perform_cmd(device, "mount -o rw,remount /system", root=True)
+        eprint("🔥 Moving the certificate to /system/etc/security/cacerts/{}.{}...".format(x509_old_hash, offset))
+        perform_cmd(device, "mv /data/local/tmp/{} /system/etc/security/cacerts/{}.{}"
+                    .format(x509_old_hash, x509_old_hash, offset), root=True)
+        eprint("🔥 Setting permissions root:root / 644")
+        perform_cmd(device, "chown root:root /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
+        perform_cmd(device, "chmod 644 /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
+        eprint("✅ Reboot your phone.")
+
 
 if __name__ == "__main__":
-    set
+    pass
