@@ -84,10 +84,17 @@ def install_certificate(certificate=None):
     else:
         if isfile(certificate):
             eprint("🔥 Found {}...".format(certificate))
+            # TODO: implement this using pure python cryptography module; it does not seem to be implemented (yet?)
+            # So either leave this as it is, or re-implement the old hash ourselves...
             # https://github.com/openssl/openssl/blob/47b4ccea9cb9b924d058fd5a8583f073b7a41656/crypto/x509/x509_cmp.c#L207
-            eprint("🔥 to be implemented")
-            x509_old_hash = "<update this>"
-            return
+            result = subprocess.run(
+                ["openssl", "x509", "-inform", "DER", "-subject_hash_old", "-in", "fah_ca.der", "-noout"],
+                capture_output=True)
+            if result.returncode == 0:
+                x509_old_hash = result.stdout.strip().decode("utf-8")
+            else:
+                eprint("❌ {}".format(result.stderr.decode("utf-8")))
+                return
         else:
             eprint("❌ {} not found...".format(certificate))
             return
@@ -113,7 +120,3 @@ def install_certificate(certificate=None):
         perform_cmd(device, "chown root:root /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
         perform_cmd(device, "chmod 644 /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
         eprint("✅ Reboot your phone.")
-
-
-if __name__ == "__main__":
-    pass
