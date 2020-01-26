@@ -88,7 +88,7 @@ def install_certificate(certificate=None):
             # So either leave this as it is, or re-implement the old hash ourselves...
             # https://github.com/openssl/openssl/blob/47b4ccea9cb9b924d058fd5a8583f073b7a41656/crypto/x509/x509_cmp.c#L207
             result = subprocess.run(
-                ["openssl", "x509", "-inform", "DER", "-subject_hash_old", "-in", "fah_ca.der", "-noout"],
+                ["openssl", "x509", "-inform", "DER", "-subject_hash_old", "-in", certificate, "-noout"],
                 capture_output=True)
             if result.returncode == 0:
                 x509_old_hash = result.stdout.strip().decode("utf-8")
