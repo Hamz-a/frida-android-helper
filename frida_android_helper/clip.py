@@ -15,5 +15,5 @@ def paste_to_clipboard(data):
     for device in get_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         app, activity = get_current_app_focus(device)
-        frida_utils.paste_to_clipboard(device, app)
+        frida_utils.paste_to_clipboard(device, app, data)
 

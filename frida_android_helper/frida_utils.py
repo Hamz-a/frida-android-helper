@@ -40,6 +40,7 @@ def copy_from_clipboard(device, pkg_name):
 
 
 def paste_to_clipboard(device, pkg_name, data):
+    print("data: '{}'".format(data))
     print('📦 {}'.format(pkg_name))
     script = load_script_with_device(device, pkg_name, "clipboard.js")
     script.exports.pastetoclipboard(data)
