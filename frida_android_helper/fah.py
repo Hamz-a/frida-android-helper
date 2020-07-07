@@ -6,6 +6,7 @@ from frida_android_helper.proxy import *
 from frida_android_helper.snap import *
 from frida_android_helper.cert import *
 from frida_android_helper.app import *
+from frida_android_helper.clip import *
 
 
 def main():
@@ -35,6 +36,11 @@ def main():
     app_group = subparsers.add_parser("app", help="List and download apps from device")
     app_group.add_argument("action", metavar="dl", type=str, help="Download Android app", nargs="*", default=["dl"])
     app_group.add_argument("list", type=str, help="List installed Android apps", nargs="?")
+
+    clip_group = subparsers.add_parser("clip", help="Manage Android's clipboard")
+    clip_group.add_argument("action", metavar="copy", type=str, help="Copy from Android's clipboard", nargs="*", default=["copy"])
+    clip_group.add_argument("paste", type=str, help="Paste to Android's clipboard", nargs="?")
+
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -72,6 +78,13 @@ def main():
             "list": list_apps,
         }
         app_route.get(args.action[0], download_app)(*args.action[1:2])
+    elif args.func == "clip":
+        if args.action[0] == "copy":
+            copy_from_clipboard()
+        elif args.action[0] == "paste":
+            paste_to_clipboard(" ".join(args.action[1:]))
+        else:
+            paste_to_clipboard(" ".join(args.action))
     #print(args) # debugging purposes
 
 
