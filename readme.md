@@ -63,7 +63,13 @@ release page using the GitHub API. This is then installed on the Android device 
     - `fah app dl`: same as above
     - `fah app dl com.example.app`: download com.example.app
 - `fah app list`: list installed app on Android device.
- 
+
+
+### Android clipboard
+- `fah clip`: display content of clipboard
+    - `fah clip copy`: same as above
+    - `fah clip paste foo bar`: set the content of the clipboard to `foo bar`
+
 
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
