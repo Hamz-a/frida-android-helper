@@ -1,3 +1,4 @@
 pure-python-adb>=0.2.2.dev0
 cryptography
 frida
+requests
