@@ -41,12 +41,12 @@ def get_ip_address():  # might need refactoring...
 
 
 def get_device_model(device: Device):
-    return "{} {}".format(device.get_properties().get("ro.vendor.product.manufacturer", "Unknown"),
-                          device.get_properties().get("ro.vendor.product.model", "Unkown"))
+    return "{}_A{}".format(device.get_properties().get("ro.product.model", "Unknown").replace(" ", ""),
+                    device.get_properties().get("ro.build.version.release", "Unknown"))
 
 
 def get_architecture(device: Device):
-    cpu = device.get_properties()['ro.product.cpu.abi']
+    cpu = device.get_properties()["ro.product.cpu.abi"]
     if "arm64" in cpu:
         return "arm64"
     if "x86_64" in cpu:
