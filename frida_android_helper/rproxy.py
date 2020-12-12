@@ -6,11 +6,12 @@ def enable_rproxy(port="8844"):
     for device in get_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         eprint("🔥 Writing firewall rules...")
-        perform_cmd(device, "iptables -t nat -F", root=True)
-        perform_cmd(device, "iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:{}".format(port), root=True)
-        perform_cmd(device, "iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 127.0.0.1:{}".format(port), root=True)
-        perform_cmd(device, "iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE", root=True)
-        perform_cmd(device, "iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE", root=True)
+        perform_cmd(device, """"(iptables -t nat -F &&
+        iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:{port} &&
+        iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 127.0.0.1:{port} &&
+        iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE &&
+        iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE)"
+        """.format(port=port), root=True)
 
         tcp_port = "tcp:{port}".format(port=port)
         eprint("🔥 Performing adb reverse {tcp_port} {tcp_port}...".format(tcp_port=tcp_port))
