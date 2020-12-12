@@ -2,9 +2,6 @@ from frida_android_helper.utils import *
 
 
 def enable_rproxy(port="8844"):
-    if not port.isdigit():  # Just in case...
-        port = 8844
-
     eprint("⚡️ Enabling Android proxy via reverse tethering...")
     for device in get_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
@@ -26,8 +23,8 @@ def disable_rproxy(port="8844"):
         eprint("🔥 Cleaning firewall rules...")
         perform_cmd(device, "iptables -t nat -F", root=True)
 
-        eprint("🔥 Performing adb reverse tcp:{} tcp:{}...".format(port, port))
-        remove_reverse(device, "tcp:8844")
+        eprint("🔥 Performing adb reverse --remove tcp:{port}...".format(port=port))
+        remove_reverse(device, "tcp:{port}".format(port=port))
 
 
 def reverse(device, remote, local):

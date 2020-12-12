@@ -3,6 +3,7 @@ import argparse
 from frida_android_helper.screen import *
 from frida_android_helper.server import *
 from frida_android_helper.proxy import *
+from frida_android_helper.rproxy import *
 from frida_android_helper.snap import *
 from frida_android_helper.cert import *
 from frida_android_helper.app import *
@@ -19,8 +20,12 @@ def main():
 
     proxy_group = subparsers.add_parser("proxy", help="Configure Android proxy")
     proxy_group.add_argument("action", metavar="enable", type=str, help="Enable Android proxy", nargs="*", default=["set"])
-    proxy_group.add_argument("disable", type=str, help="Delete Android proxy", nargs="?")
+    proxy_group.add_argument("disable", type=str, help="Disable Android proxy", nargs="?")
     proxy_group.add_argument("get", type=str, help="Get Android proxy settings", nargs="?")
+
+    rproxy_group = subparsers.add_parser("rproxy", help="Configure Android proxy via reverse tethering")
+    rproxy_group.add_argument("action", metavar="enable", type=str, help="Enable Android proxy via reverse tethering", nargs="*", default=["set"])
+    rproxy_group.add_argument("disable", type=str, help="Disable Android proxy via reverse tethering", nargs="?")
 
     screen_group = subparsers.add_parser("screen", help="Take screenshot for evidence")
     screen_group.add_argument("action", metavar="filename", type=str, help="Specify filename", nargs="?", default=None)
@@ -40,7 +45,6 @@ def main():
     clip_group = subparsers.add_parser("clip", help="Manage Android's clipboard")
     clip_group.add_argument("action", metavar="copy", type=str, help="Copy from Android's clipboard", nargs="*", default=["copy"])
     clip_group.add_argument("paste", type=str, help="Paste to Android's clipboard", nargs="?")
-
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -85,6 +89,12 @@ def main():
             paste_to_clipboard(" ".join(args.action[1:]))
         else:
             paste_to_clipboard(" ".join(args.action))
+    elif args.func == "rproxy":
+        rproxy_route = {
+            "enable": enable_rproxy,
+            "disable": disable_rproxy
+        }
+        rproxy_route.get(args.action[0], enable_rproxy)(*args.action[1:2])
     #print(args) # debugging purposes
 
 
