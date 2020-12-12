@@ -42,6 +42,22 @@ release page using the GitHub API. This is then installed on the Android device 
 - Get current proxy settings `fah proxy get`
 
 
+### Android proxy via reverse tethering configuration
+Route traffic by performing `adb reverse` and a few iptables rules: 
+1. Connect your Android mobile device via USB
+2. Setup an intercepting proxy (ex: Burp)
+3. Configure intercepting proxy to use transparent proxy
+4. Connect to random wifi hotspot on Android device 
+
+- Enable rproxy:
+    - `fah rproxy`: will use default port 8844
+    - `fah rproxy enable`: same as above
+    - `fah rproxy enable 8888`: specify port
+- Disable rproxy:
+    - `fah rproxy disable`: will use default port 8844
+    - `fah rproxy disable 8888`: specify port
+
+
 ### Android screenshot
 - `fah screen`: take a screenshot with the following format `deviceID_%Y.%m.%d_%H.%M.%S.png`
     - `fah screen filename`: take a screenshot with the following format: `deviceID_filename.png`
