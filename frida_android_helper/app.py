@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from frida_android_helper.utils import *
 
@@ -14,15 +15,21 @@ def download_app(packagename=None):
                 continue
 
         eprint("🔥 Querying path info for {}...".format(packagename))
-        path = perform_cmd(device, "pm path {}".format(packagename)).strip().replace("package:", "", 1)
+        path = perform_cmd(device, "pm path {}".format(packagename))
+        packages = [p.replace('package:', '') for p in path.splitlines()]
 
-        if not path:
+        if not packages:
             eprint("❌ {} package does not exist.".format(packagename))
             continue
 
-        save_apk = "{}_{}.apk".format(packagename, datetime.now().strftime("%Y.%m.%d_%H.%M.%S"))
-        eprint("🔥 Downloading from {} to {}...".format(path, save_apk))
-        device.pull(path, save_apk)
+        folder = "{}_{}".format(packagename, datetime.now().strftime("%Y.%m.%d_%H.%M.%S"))
+        eprint("🔥 Creating directory {}...".format(folder))
+        os.mkdir(folder)
+
+        for package in packages:
+            save_package = "{}/{}".format(folder, os.path.basename(package))
+            eprint("🔥 Downloading from {} to {}...".format(package, save_package))
+            device.pull(package, save_package)
 
 
 def list_apps(filter=None):
