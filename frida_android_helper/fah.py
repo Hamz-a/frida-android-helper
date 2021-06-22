@@ -64,7 +64,7 @@ def main():
             "disable": disable_proxy,
             "get": get_proxy
         }
-        proxy_route.get(args.action[0], enable_proxy)(*args.action[1:2])
+        proxy_route.get(args.action[0], enable_proxy)(*args.action[1:3])
     elif args.func == "screen":
         take_screenshot(args.action)
     elif args.func == "snap":
