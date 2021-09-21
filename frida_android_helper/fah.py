@@ -8,6 +8,7 @@ from frida_android_helper.snap import *
 from frida_android_helper.cert import *
 from frida_android_helper.app import *
 from frida_android_helper.clip import *
+from frida_android_helper.ps import *
 
 
 def main():
@@ -45,6 +46,9 @@ def main():
     clip_group = subparsers.add_parser("clip", help="Manage Android's clipboard")
     clip_group.add_argument("action", metavar="copy", type=str, help="Copy from Android's clipboard", nargs="*", default=["copy"])
     clip_group.add_argument("paste", type=str, help="Paste to Android's clipboard", nargs="?")
+
+    ps_group = subparsers.add_parser("ps", help="List Android's processes")
+    ps_group.add_argument("action", metavar="ps", type=str, help="List Android's processes", nargs="*", default=None)
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -95,6 +99,8 @@ def main():
             "disable": disable_rproxy
         }
         rproxy_route.get(args.action[0], enable_rproxy)(*args.action[1:2])
+    elif args.func == "ps":
+        list_processes(" ".join(args.action))
     #print(args) # debugging purposes
 
 
