@@ -87,5 +87,10 @@ Route traffic by performing `adb reverse` and a few iptables rules:
     - `fah clip paste foo bar`: set the content of the clipboard to `foo bar`
 
 
+### Android processes
+- `fah ps`: list apps/processes
+    - `fah ps foobar`: same as above but filter on `foobar`
+
+
 ## Ideas & bugs
 Ideas and bug reports are welcome! 
