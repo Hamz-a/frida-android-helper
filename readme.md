@@ -1,5 +1,7 @@
 # Frida Android Helper
 
+![preview](preview.png?raw=true)
+
 Several handy commands to facilitate common Android pentesting tasks.
 
 It uses `pure-python-adb` to interface with the ADB server.
