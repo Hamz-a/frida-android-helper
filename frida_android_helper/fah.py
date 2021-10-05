@@ -9,6 +9,7 @@ from frida_android_helper.cert import *
 from frida_android_helper.app import *
 from frida_android_helper.clip import *
 from frida_android_helper.ps import *
+from frida_android_helper.crypto import *
 
 
 def main():
@@ -101,6 +102,8 @@ def main():
         rproxy_route.get(args.action[0], enable_rproxy)(*args.action[1:2])
     elif args.func == "ps":
         list_processes(" ".join(args.action))
+    elif args.func == "crypto":
+        crypto_sniffer()
     #print(args) # debugging purposes
 
 
