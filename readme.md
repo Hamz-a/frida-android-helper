@@ -78,7 +78,7 @@ Route traffic by performing `adb reverse` and a few iptables rules:
 ### Android app
 - `fah app`: try to download the currently opened app
     - `fah app dl`: same as above
-    - `fah app dl com.example.app`: download com.example.app
+    - `fah app dl <filter>`: list apps by filter and download them
 - `fah app list`: list installed app on Android device.
 
 
