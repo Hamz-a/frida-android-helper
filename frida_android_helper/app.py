@@ -41,8 +41,10 @@ def list_apps(filter=None):
 
     for device in get_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
-        for package in device.list_packages():
-            if filter in package:
-                # Print this to stdout because someone might like to pipe the
-                # list to another command
-                print(package)
+        for package in list_apps_for_device(device, filter):
+            print(package)
+
+
+def list_apps_for_device(device, filter=None):
+    return [package for package in device.list_packages() if filter in package]
+
