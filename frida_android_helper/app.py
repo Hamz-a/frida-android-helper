@@ -13,23 +13,29 @@ def download_app(packagename=None):
             if packagename == "StatusBar":
                 eprint("❌️ Unlock device or specify package name.")
                 continue
+            packagenames = [packagename]
+        else:
+            packagenames = list_apps_for_device(device, packagename)
+        if not packagenames:
+            eprint("❌ No package with filter '{}' was found".format(packagename))
 
-        eprint("🔥 Querying path info for {}...".format(packagename))
-        path = perform_cmd(device, "pm path {}".format(packagename))
-        packages = [p.replace('package:', '') for p in path.splitlines()]
+        for packagename in packagenames:
+            eprint("🔥 Querying path info for {}...".format(packagename))
+            path = perform_cmd(device, "pm path {}".format(packagename))
+            packages = [p.replace('package:', '') for p in path.splitlines()]
 
-        if not packages:
-            eprint("❌ {} package does not exist.".format(packagename))
-            continue
+            if not packages:
+                eprint("❌ {} package does not exist.".format(packagename))
+                continue
 
-        folder = "{}_{}".format(packagename, datetime.now().strftime("%Y.%m.%d_%H.%M.%S"))
-        eprint("🔥 Creating directory {}...".format(folder))
-        os.mkdir(folder)
+            folder = "{}_{}".format(packagename, datetime.now().strftime("%Y.%m.%d_%H.%M.%S"))
+            eprint("🔥 Creating directory {}...".format(folder))
+            os.mkdir(folder)
 
-        for package in packages:
-            save_package = "{}/{}".format(folder, os.path.basename(package))
-            eprint("🔥 Downloading from {} to {}...".format(package, save_package))
-            device.pull(package, save_package)
+            for package in packages:
+                save_package = "{}/{}".format(folder, os.path.basename(package))
+                eprint("🔥 Downloading from {} to {}...".format(package, save_package))
+                device.pull(package, save_package)
 
 
 def list_apps(filter=None):
