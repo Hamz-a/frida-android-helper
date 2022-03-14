@@ -9,7 +9,7 @@ from frida_android_helper.cert import *
 from frida_android_helper.app import *
 from frida_android_helper.clip import *
 from frida_android_helper.ps import *
-from frida_android_helper.crypto import *
+from cryptography import *
 
 
 def main():
