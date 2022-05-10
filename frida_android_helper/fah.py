@@ -9,7 +9,7 @@ from frida_android_helper.cert import *
 from frida_android_helper.app import *
 from frida_android_helper.clip import *
 from frida_android_helper.ps import *
-
+from frida_android_helper.input import *
 
 def main():
     arg_parser = argparse.ArgumentParser(prog="fah", description="Frida Android Helper")
@@ -49,6 +49,9 @@ def main():
 
     ps_group = subparsers.add_parser("ps", help="List Android's processes")
     ps_group.add_argument("action", metavar="ps", type=str, help="List Android's processes", nargs="*", default=None)
+
+    input_group = subparsers.add_parser("input", help="Input manipulation")
+    input_group.add_argument("action", metavar="text", type=str, help="Write to input", nargs="*", default=None)
 
     args = arg_parser.parse_args()
     if not args.func:
@@ -101,6 +104,9 @@ def main():
         rproxy_route.get(args.action[0], enable_rproxy)(*args.action[1:2])
     elif args.func == "ps":
         list_processes(" ".join(args.action))
+    elif args.func == "input":
+        if args.action[0] == "text":
+            input_text(" ".join(args.action[1:]))
     #print(args) # debugging purposes
 
 

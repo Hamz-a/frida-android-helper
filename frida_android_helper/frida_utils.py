@@ -2,6 +2,7 @@ import pkg_resources
 import frida
 
 
+
 def destroyed_callback(reason):
     print("🔰 Destroyed! Reason: {}".format(reason))
 
