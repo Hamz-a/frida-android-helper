@@ -29,7 +29,10 @@ def download_latest_frida(device: AdbDevice):
 
 def launch_frida_server(device: AdbDevice):
     # hack: launch server, "forever sleep" and put in background. Short timeout to break off connection
-    perform_cmd(device, "{}{} && sleep 2147483647 &".format(FRIDA_INSTALL_DIR, FRIDA_BIN_NAME), root=True, timeout=1)
+    err = perform_cmd(device, "{}{} && sleep 2147483647 &".format(FRIDA_INSTALL_DIR, FRIDA_BIN_NAME), root=True, timeout=1)
+    if err:
+        eprint("❌ {}".format(err))
+
 
 
 def start_server():
@@ -45,7 +48,10 @@ def stop_server():
     devices = get_adb_devices()
     for device in devices:
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
-        perform_cmd(device, "pkill frida-server", True)
+        err = perform_cmd(device, "pkill frida-server", root=True)
+        if err:
+            eprint("❌ {}".format(err))
+            continue
 
 
 def reboot_server():
