@@ -112,11 +112,25 @@ def install_certificate(certificate=None):
             offset += 1
 
         eprint("🔥 Remounting the system rw: mount -o rw,remount /system...")
-        perform_cmd(device, "mount -o rw,remount /system", root=True)
+        err = perform_cmd(device, "mount -o rw,remount /system", root=True)
+        if err:
+            eprint("❌ {}".format(err))
+            continue
+
         eprint("🔥 Moving the certificate to /system/etc/security/cacerts/{}.{}...".format(x509_old_hash, offset))
-        perform_cmd(device, "mv /data/local/tmp/{} /system/etc/security/cacerts/{}.{}"
+        err = perform_cmd(device, "mv /data/local/tmp/{} /system/etc/security/cacerts/{}.{}"
                     .format(x509_old_hash, x509_old_hash, offset), root=True)
+        if err:
+            eprint("❌ {}".format(err))
+            continue
+
         eprint("🔥 Setting permissions root:root / 644")
-        perform_cmd(device, "chown root:root /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
-        perform_cmd(device, "chmod 644 /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
+        err = perform_cmd(device, "chown root:root /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
+        if err:
+            eprint("❌ {}".format(err))
+            continue
+        err = perform_cmd(device, "chmod 644 /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
+        if err:
+            eprint("❌ {}".format(err))
+            continue
         eprint("✅ Reboot your phone.")
