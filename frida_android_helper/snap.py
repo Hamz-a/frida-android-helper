@@ -4,12 +4,12 @@ from frida_android_helper.utils import *
 
 def take_snapshot(packagename=None):
     eprint("⚡️ Taking a snapshot...")
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         if packagename is None:  # get
-            packagename, _ = get_current_app_focus(device)
-            if packagename == "StatusBar":
-                eprint("❌️ Unlock device or specify package name.")
+            packagename = get_current_app_focus(device)
+            if packagename is None:
+                eprint("❌️ No app is open, specify package name.")
                 continue
 
         directory_name = "{}_{}".format(packagename, datetime.now().strftime("%Y.%m.%d_%H.%M.%S"))

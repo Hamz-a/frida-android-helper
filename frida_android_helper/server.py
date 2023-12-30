@@ -1,14 +1,14 @@
 import requests
 import lzma
 from frida_android_helper.utils import *
-
+from ppadb.device import Device as AdbDevice
 
 FRIDA_INSTALL_DIR = "/data/local/tmp/"
 FRIDA_BIN_NAME = "frida-server"
 FRIDA_LATEST_RELEASE_URL = "https://api.github.com/repos/frida/frida/releases/latest"
 
 
-def download_latest_frida(device: Device):
+def download_latest_frida(device: AdbDevice):
     latest_release = requests.get(FRIDA_LATEST_RELEASE_URL).json()
     arch = get_architecture(device)
 
@@ -27,14 +27,14 @@ def download_latest_frida(device: Device):
             return release_name[:-3]
 
 
-def launch_frida_server(device: Device):
+def launch_frida_server(device: AdbDevice):
     # hack: launch server, "forever sleep" and put in background. Short timeout to break off connection
     perform_cmd(device, "{}{} && sleep 2147483647 &".format(FRIDA_INSTALL_DIR, FRIDA_BIN_NAME), root=True, timeout=1)
 
 
 def start_server():
     eprint("⚡️ Starting frida-server")
-    devices = get_devices()
+    devices = get_adb_devices()
     for device in devices:
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         launch_frida_server(device)
@@ -42,7 +42,7 @@ def start_server():
 
 def stop_server():
     eprint("⚡️ Stopping frida-server")
-    devices = get_devices()
+    devices = get_adb_devices()
     for device in devices:
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         perform_cmd(device, "pkill frida-server", True)
@@ -56,7 +56,7 @@ def reboot_server():
 
 def update_server():
     eprint("⚡️ Updating frida-server")
-    devices = get_devices()
+    devices = get_adb_devices()
     for device in devices:
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         server_binary = download_latest_frida(device)

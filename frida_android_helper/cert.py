@@ -100,7 +100,7 @@ def install_certificate(certificate=None):
             return
 
     # install them certificates on devices
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         eprint("🔥 Pushing {} to {}/{}...".format(certificate, "/data/local/tmp", x509_old_hash))
         device.push(certificate, "/data/local/tmp/{}".format(x509_old_hash))

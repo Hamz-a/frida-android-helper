@@ -4,7 +4,7 @@ import frida
 
 def list_processes(search):
     eprint("⚡️ Listing processes...")
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         frida_device = frida.get_device(device.get_serial_no())
         for app in frida_device.enumerate_applications():

@@ -1,16 +1,19 @@
+from typing import List
 import subprocess
 import socket
 import sys
 
+
+import frida
 from ppadb.client import Client as AdbClient
-from ppadb.device import Device
+from ppadb.device import Device as AdbDevice
 
 
 def eprint(*args, **kwargs):
     print(*args, file=sys.stderr, **kwargs)
 
 
-def get_devices():
+def get_adb_devices() -> List[AdbDevice]:
     for attempt in range(2):
         try:
             client = AdbClient(host="127.0.0.1", port=5037)
@@ -26,7 +29,7 @@ def get_devices():
     return devices
 
 
-def perform_cmd(device: Device, command: str, root: bool = False, timeout: int = None):
+def perform_cmd(device: AdbDevice, command: str, root: bool = False, timeout: int = None):
     if root:
         command = "su -c {}".format(command)
     try:
@@ -40,12 +43,12 @@ def get_ip_address():  # might need refactoring...
     return socket.gethostbyname(socket.gethostname())
 
 
-def get_device_model(device: Device):
+def get_device_model(device: AdbDevice):
     return "{}_A{}".format(device.get_properties().get("ro.product.model", "Unknown").replace(" ", ""),
                     device.get_properties().get("ro.build.version.release", "Unknown"))
 
 
-def get_architecture(device: Device):
+def get_architecture(device: AdbDevice):
     cpu = device.get_properties()["ro.product.cpu.abi"]
     if "arm64" in cpu:
         return "arm64"
@@ -58,14 +61,26 @@ def get_architecture(device: Device):
     return ""
 
 
-def get_current_app_focus(device: Device):
-    # Sample: mCurrentFocus=Window{127ced0 u0 com.android.launcher3/com.android.searchlauncher.SearchLauncher}
-    # When locked: mCurrentFocus=Window{8f41b66 u0 StatusBar}
-    result = perform_cmd(device, "dumpsys window windows | grep mCurrentFocus")
+def get_current_app_focus(device: AdbDevice):
+    try:
+        device = frida.get_device_matching(lambda d: d.id == device.get_serial_no())
+        frontmost_app = device.get_frontmost_application()
+        if frontmost_app:
+            return frontmost_app.identifier
+    except:
+        pass
+    return None
+
+
+def get_current_activity(device: AdbDevice):
+    # Sample: mCurrentFocus=Window{37b96ba u0 com.android.chrome/com.google.android.apps.chrome.Main}
+    # When locked: mCurrentFocus=Window{5dd4bac u0 NotificationShade}
+    result = perform_cmd(device, "dumpsys activity activities | grep mCurrentFocus")
 
     currentFocus = result.strip("\r\n{}").split(" ")[-1]
     if "/" in currentFocus:
-        return currentFocus.split("/")
+        return currentFocus.split("/")[-1]
     else:
         eprint("⚠️  Device might be locked... (mCurrentFocus={})".format(currentFocus))
-        return [currentFocus, ""]
+        return None
+

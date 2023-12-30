@@ -3,7 +3,7 @@ from frida_android_helper.utils import *
 
 def enable_rproxy(port="8844"):
     eprint("⚡️ Enabling Android proxy via reverse tethering...")
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         eprint("🔥 Writing firewall rules...")
         perform_cmd(device, """"(iptables -t nat -F &&
@@ -20,7 +20,7 @@ def enable_rproxy(port="8844"):
 
 def disable_rproxy(port="8844"):
     eprint("⚡️ Disabling Android proxy via reverse tethering...")
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("🔥 Cleaning firewall rules...")
         perform_cmd(device, "iptables -t nat -F", root=True)
 

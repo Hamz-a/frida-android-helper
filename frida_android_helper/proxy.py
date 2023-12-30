@@ -12,7 +12,7 @@ def enable_proxy(host=None, port="8080"):
         port = 8080
 
     eprint("⚡️ Enabling the Android proxy...")
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         device.shell("settings put global http_proxy {}:{}".format(host, port))
         result = device.shell("settings get global http_proxy")
@@ -21,7 +21,7 @@ def enable_proxy(host=None, port="8080"):
 
 def disable_proxy():
     eprint("⚡️ Disabling the Android proxy...")
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         result = device.shell("settings delete global http_proxy")
         eprint("🔥 settings delete global http_proxy -> {}".format(result.strip()))
@@ -38,7 +38,7 @@ def disable_proxy():
 
 def get_proxy():
     eprint("⚡️ Retrieving the Android proxy...")
-    for device in get_devices():
+    for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         result = device.shell("settings get global http_proxy")
         eprint("🔥 settings get global http_proxy => {}".format(result.strip()))

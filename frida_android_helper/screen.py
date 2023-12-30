@@ -5,7 +5,7 @@ from frida_android_helper.frida_utils import *
 
 def take_screenshot(filename=None):
     eprint("⚡️ Taking a screenshot...")
-    for device in get_devices():
+    for device in get_adb_devices():
         signature = get_device_model(device).replace(" ", "")
         if filename is None:
             filename = "{}_{}.png".format(signature, datetime.now().strftime("%Y.%m.%d_%H.%M.%S"))
@@ -19,8 +19,9 @@ def take_screenshot(filename=None):
             eprint("🔥 Screenshot saved {}".format(filename))
         except IndexError:
             eprint("⚠️  Activity protected by SECURE flag...")
-            app, activity = get_current_app_focus(device)
-            if not activity: continue
+            app = get_current_app_focus(device)
+            activity = get_current_activity(device)
+            if activity is None: continue
             eprint("🔥 Trying to disable SECURE flag for {}.{}...".format(app, activity))
             disable_secure_flag(device, app, activity)
             try:
