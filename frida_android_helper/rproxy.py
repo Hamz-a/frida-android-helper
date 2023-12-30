@@ -6,13 +6,15 @@ def enable_rproxy(port="8844"):
     for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
         eprint("🔥 Writing firewall rules...")
-        perform_cmd(device, """"(iptables -t nat -F &&
+        err = perform_cmd(device, """"(iptables -t nat -F &&
         iptables -t nat -A OUTPUT -p tcp --dport 80 -j DNAT --to-destination 127.0.0.1:{port} &&
         iptables -t nat -A OUTPUT -p tcp --dport 443 -j DNAT --to-destination 127.0.0.1:{port} &&
         iptables -t nat -A POSTROUTING -p tcp --dport 80 -j MASQUERADE &&
         iptables -t nat -A POSTROUTING -p tcp --dport 443 -j MASQUERADE)"
         """.format(port=port), root=True)
-
+        if err:
+            eprint("❌ {}".format(err))
+            continue
         tcp_port = "tcp:{port}".format(port=port)
         eprint("🔥 Performing adb reverse {tcp_port} {tcp_port}...".format(tcp_port=tcp_port))
         reverse(device, tcp_port, tcp_port)
@@ -22,8 +24,10 @@ def disable_rproxy(port="8844"):
     eprint("⚡️ Disabling Android proxy via reverse tethering...")
     for device in get_adb_devices():
         eprint("🔥 Cleaning firewall rules...")
-        perform_cmd(device, "iptables -t nat -F", root=True)
-
+        err = perform_cmd(device, "iptables -t nat -F", root=True)
+        if err:
+            eprint("❌ {}".format(err))
+            continue
         eprint("🔥 Performing adb reverse --remove tcp:{port}...".format(port=port))
         remove_reverse(device, "tcp:{port}".format(port=port))
 
