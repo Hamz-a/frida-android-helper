@@ -78,8 +78,11 @@ def install_certificate(certificate=None):
         if isfile("fah_ca.der"):
             eprint("🔥 Found fah_ca.der...")
             certificate = "fah_ca.der"
+        elif isfile("cacert.der"):  # burp'ish
+            eprint("🔥 Found cacert.der...")
+            certificate = "cacert.der"
         else:
-            eprint("❌ fah_ca.der not found...")
+            eprint("❌ fah_ca.der / cacert.der not found...")
             return
     else:
         if isfile(certificate):
