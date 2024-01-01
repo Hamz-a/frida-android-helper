@@ -5,8 +5,12 @@ from cryptography import x509
 from datetime import datetime, timedelta
 from uuid import uuid4
 from frida_android_helper.utils import *
-from os.path import isfile
+import pkg_resources
+import shutil
+import appdirs
+import os
 
+PATH_CACHE_CA_DER = os.path.join(appdirs.user_data_dir("fah"), "fah_ca.der")
 
 def setup_certificate(_=None):
     eprint("⚡️ Setting up your device certificate...")
@@ -67,6 +71,10 @@ def generate_certificate(_=None):
             encoding=serialization.Encoding.DER
         ))
 
+    eprint("⚡️ Caching fah_ca.der to {}...".format(PATH_CACHE_CA_DER))
+    os.makedirs(os.path.dirname(PATH_CACHE_CA_DER), exist_ok=True)
+    shutil.copyfile("fah_ca.der", PATH_CACHE_CA_DER)
+
 
 def install_certificate(certificate=None):
     eprint("⚡️ Installing certificate...")
@@ -75,17 +83,25 @@ def install_certificate(certificate=None):
     x509_old_hash = "35aa2e12"
     if certificate is None:
         eprint("🔥 Certificate not specified, checking the existence of a default fah_ca.der...")
-        if isfile("fah_ca.der"):
+        if os.path.isfile("fah_ca.der"):
             eprint("🔥 Found fah_ca.der...")
             certificate = "fah_ca.der"
-        elif isfile("cacert.der"):  # burp'ish
+        elif os.path.isfile("cacert.der"):  # burp'ish
             eprint("🔥 Found cacert.der...")
             certificate = "cacert.der"
+        elif os.path.isfile(PATH_CACHE_CA_DER):  # we got a cert in the cache!
+            eprint("🔥 Found {}...".format(PATH_CACHE_CA_DER))
+            certificate = PATH_CACHE_CA_DER
         else:
             eprint("❌ fah_ca.der / cacert.der not found...")
             return
+
+        if os.path.isfile("fah_ca.der") or os.path.isfile("cacert.der"): # hacky: in case we didn't get it from cache...
+            eprint("⚡️ Caching {} to {}...".format(certificate, PATH_CACHE_CA_DER))
+            os.makedirs(os.path.dirname(PATH_CACHE_CA_DER), exist_ok=True)
+            shutil.copyfile(certificate, PATH_CACHE_CA_DER)
     else:
-        if isfile(certificate):
+        if os.path.isfile(certificate):
             eprint("🔥 Found {}...".format(certificate))
             # TODO: implement this using pure python cryptography module; it does not seem to be implemented (yet?)
             # So either leave this as it is, or re-implement the old hash ourselves...
@@ -95,6 +111,9 @@ def install_certificate(certificate=None):
                 capture_output=True)
             if result.returncode == 0:
                 x509_old_hash = result.stdout.strip().decode("utf-8")
+                eprint("⚡️ Caching {} to {}...".format(certificate, PATH_CACHE_CA_DER))
+                os.makedirs(os.path.dirname(PATH_CACHE_CA_DER), exist_ok=True)
+                shutil.copyfile(certificate, PATH_CACHE_CA_DER)
             else:
                 eprint("❌ {}".format(result.stderr.decode("utf-8")))
                 return
@@ -105,35 +124,62 @@ def install_certificate(certificate=None):
     # install them certificates on devices
     for device in get_adb_devices():
         eprint("📲 Device: {} ({})".format(get_device_model(device), device.get_serial_no()))
-        eprint("🔥 Pushing {} to {}/{}...".format(certificate, "/data/local/tmp", x509_old_hash))
-        device.push(certificate, "/data/local/tmp/{}".format(x509_old_hash))
-
+        path_cacerts = "/system/etc/security/cacerts"
         offset = 0
         while "No such file or directory" not in \
-            perform_cmd(device, "ls /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset)):
+                perform_cmd(device, "ls /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset)):
             eprint("❌ Found /system/etc/security/cacerts/{}.{}, incrementing by 1...".format(x509_old_hash, offset))
             offset += 1
 
-        eprint("🔥 Remounting the system rw: mount -o rw,remount /system...")
-        err = perform_cmd(device, "mount -o rw,remount /system", root=True)
-        if err:
-            eprint("❌ {}".format(err))
-            continue
+        eprint("🔥 Pushing {} to {}/{}...".format(certificate, "/data/local/tmp", x509_old_hash))
+        device.push(certificate, "/data/local/tmp/{}".format(x509_old_hash))
 
-        eprint("🔥 Moving the certificate to /system/etc/security/cacerts/{}.{}...".format(x509_old_hash, offset))
-        err = perform_cmd(device, "mv /data/local/tmp/{} /system/etc/security/cacerts/{}.{}"
-                    .format(x509_old_hash, x509_old_hash, offset), root=True)
+        # Powered by https://www.g1a55er.net/Android-14-Still-Allows-Modification-of-System-Certificates
+        if get_android_version(device) >= 14:
+            eprint("🔥 Detected Android 14+, we need a small detour...")
+            eprint("    for more info, see: https://www.g1a55er.net/Android-14-Still-Allows-Modification-of-System-Certificates")
+            path_cacerts = "/apex/com.android.conscrypt/cacerts"
+
+            script = pkg_resources.resource_filename("frida_android_helper", "scripts/android14_apex.sh")
+            eprint("🔥 Pushing android14_apex.sh script to /data/local/tmp/android14_apex.sh...")
+            device.push(script, "/data/local/tmp/android14_apex.sh")
+
+            eprint("🔥 chmod +x /data/local/tmp/android14_apex.sh...")
+            err = perform_cmd(device, "chmod +x /data/local/tmp/android14_apex.sh", root=True)
+            if err:
+                eprint("❌ {}".format(err))
+                continue
+            eprint("🔥 Running /data/local/tmp/android14_apex.sh...")
+            err = perform_cmd(device, "/data/local/tmp/android14_apex.sh", root=True)
+            if err and "Device or resource busy" not in err:  # known error to ignore for now...
+                eprint("❌ {}".format(err))
+                continue
+        else:
+            eprint("🔥 Remounting the system rw: mount -o rw,remount /system...")
+            err = perform_cmd(device, "mount -o rw,remount /system", root=True)
+            if err:
+                eprint("❌ {}".format(err))
+                continue
+
+        eprint("🔥 Moving the certificate to {}/{}.{}...".format(path_cacerts, x509_old_hash, offset))
+        err = perform_cmd(device, "mv /data/local/tmp/{} {}/{}.{}".format(x509_old_hash, path_cacerts, x509_old_hash, offset), root=True)
         if err:
             eprint("❌ {}".format(err))
             continue
 
         eprint("🔥 Setting permissions root:root / 644")
-        err = perform_cmd(device, "chown root:root /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
+        err = perform_cmd(device, "chown root:root {}/{}.{}".format(path_cacerts, x509_old_hash, offset), root=True)
         if err:
             eprint("❌ {}".format(err))
             continue
-        err = perform_cmd(device, "chmod 644 /system/etc/security/cacerts/{}.{}".format(x509_old_hash, offset), root=True)
+        err = perform_cmd(device, "chmod 644 {}/{}.{}".format(path_cacerts, x509_old_hash, offset), root=True)
         if err:
             eprint("❌ {}".format(err))
             continue
-        eprint("✅ Reboot your phone.")
+
+        if get_android_version(device) >= 14:
+            perform_cmd(device, "killall system_server", root=True)
+            eprint("✅ Soft rebooting now... Do not reboot your phone or you have to install the certificate again.")
+        else:
+            eprint("✅ Reboot your phone.")
+

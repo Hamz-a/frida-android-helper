@@ -59,6 +59,10 @@ def get_device_model(device: AdbDevice):
                     device.get_properties().get("ro.build.version.release", "Unknown"))
 
 
+def get_android_version(device: AdbDevice):
+    return int(device.get_properties().get("ro.build.version.release", -1))
+
+
 def get_architecture(device: AdbDevice):
     cpu = device.get_properties()["ro.product.cpu.abi"]
     if "arm64" in cpu:
