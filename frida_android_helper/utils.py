@@ -60,7 +60,7 @@ def get_device_model(device: AdbDevice):
 
 
 def get_android_version(device: AdbDevice):
-    return int(device.get_properties().get("ro.build.version.release", -1))
+    return int(device.get_properties().get("ro.build.version.release", '-1').split('.')[0])
 
 
 def get_architecture(device: AdbDevice):
